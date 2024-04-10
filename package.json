@@ -1,0 +1,28 @@
+{
+  "name": "listenup-levelup",
+  "version": "1.0.0",
+  "description": "ListenUp is an application for students to improve their listening skills.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/index.ts",
+    "dev": "npx nodemon ./src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.6",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.4"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.12.1",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "prisma": "^5.12.1",
+    "uuid": "^9.0.1"
+  }
+}
