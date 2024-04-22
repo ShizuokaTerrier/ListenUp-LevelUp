@@ -1,21 +1,20 @@
-const { format } = require('date-fns');
+import { format } from 'date-fns';
 import { v4 as uuid } from 'uuid';
 import fs from 'fs';
-const fsPromises = require('fs').promises;
+import { promises as fsPromises } from 'fs';
 import path from 'path';
+import { Request, Response, NextFunction } from 'express';
 
-const logEvents = async (message: string) => {
+const logEvents = async (message: string, logName: string = 'eventLog.txt') => {
   const dateTime = `${format(new Date(), 'yyyyMMdd\tHH:mm:ss')}`;
   const logItem = `${dateTime}\t${uuid()}\t${message}\n`;
   console.log(logItem);
   try {
-    if (!fs.existsSync(path.join(__dirname, 'logs'))) {
-      await fsPromises.mkdir(path.join(__dirname, 'logs'));
+    const logsDir = path.join(__dirname, 'logs');
+    if (!fs.existsSync(logsDir)) {
+      await fsPromises.mkdir(logsDir);
     }
-    await fsPromises.appendFile(
-      path.join(__dirname, 'logs', 'eventLog.txt'),
-      logItem
-    );
+    await fsPromises.appendFile(path.join(logsDir, logName), logItem);
   } catch (error) {
     console.log(error);
   }
@@ -24,4 +23,10 @@ console.log(format(new Date(), 'yyyyMMdd\tHH:mm:ss'));
 
 console.log(uuid());
 
-module.exports = logEvents;
+const logger = (req: Request, res: Response, next: NextFunction) => {
+  logEvents(`${req.method}\t${req.headers.origin}\t${req.url}`, 'reqLog.txt');
+  console.log(`${req.method} ${req.path}`);
+  next();
+};
+
+export { logEvents, logger };
