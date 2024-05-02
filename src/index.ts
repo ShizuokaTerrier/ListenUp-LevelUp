@@ -3,6 +3,7 @@ import { Request, Response, Router } from 'express';
 import cors from 'cors';
 const { logger } = require('./logEvents');
 import errorHandler from './middleware/errorHandler';
+import * as UsersController from './user_profiles/users.controller';
 const PORT = process.env.PORT || 8000;
 const app = express();
 
@@ -37,6 +38,10 @@ app.use(cors(corsOptions));
 app.get('/', async (req, res) => {
   res.json({ message: 'Success!' });
 });
+
+// User Routes
+
+app.post('/user', UsersController.registerNewUser);
 
 app.use(errorHandler);
 

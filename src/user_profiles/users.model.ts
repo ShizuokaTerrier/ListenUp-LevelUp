@@ -2,11 +2,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const duplicateUser = async (fieldName: string, value: any) => {
+export const duplicateUser = async (data: any) => {
   try {
     const checkForDuplicate = await prisma.user.findFirst({
       where: {
-        [fieldName]: value,
+        email: data.email,
       },
     });
     return !!checkForDuplicate;
@@ -14,4 +14,10 @@ export const duplicateUser = async (fieldName: string, value: any) => {
     console.error('Error checking for duplicate:', error);
     throw error;
   }
+};
+
+export const createNewUser = async (data: any) => {
+  return await prisma.user.create({
+    data,
+  });
 };
