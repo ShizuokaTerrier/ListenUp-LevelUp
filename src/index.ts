@@ -1,16 +1,14 @@
-import express from 'express';
+import express, { NextFunction } from 'express';
 import { Request, Response, Router } from 'express';
 import cors from 'cors';
-
+const { logger } = require('./logEvents');
+import errorHandler from './middleware/errorHandler';
+import * as UsersController from './user_profiles/users.controller';
 const PORT = process.env.PORT || 8000;
 const app = express();
-const router = Router();
 
 // custom middleware logger
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
-  next();
-});
+app.use(logger);
 
 // middle-ware for handling encoded data, such as form data
 
@@ -40,6 +38,12 @@ app.use(cors(corsOptions));
 app.get('/', async (req, res) => {
   res.json({ message: 'Success!' });
 });
+
+// User Routes
+
+app.post('/user', UsersController.registerNewUser);
+
+app.use(errorHandler);
 
 app.listen(8000, () => {
   console.log(`Server running on localhost:${PORT}`);
