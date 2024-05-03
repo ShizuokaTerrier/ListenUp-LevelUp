@@ -42,6 +42,7 @@ app.get('/', async (req, res) => {
 // User Routes
 
 app.post('/user', UsersController.registerNewUser);
+app.post('/login', UsersController.handleLogin);
 
 app.use(errorHandler);
 
