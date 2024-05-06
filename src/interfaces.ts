@@ -1,4 +1,5 @@
 // interface for event logging
+import { Request } from 'express';
 
 export interface Event {
   timestamp: Date;
@@ -14,4 +15,8 @@ export interface User {
   password: string;
   createdAt: string;
   scores: number;
+}
+
+export interface AuthenticatedRequest extends Request {
+  user?: string;
 }

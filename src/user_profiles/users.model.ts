@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { handleRefreshToken } from './users.controller';
 
 const prisma = new PrismaClient();
 
@@ -31,5 +32,40 @@ export const loginUser = async (data: any) => {
     return loginInfo;
   } catch (error: any) {
     console.error('Error when attemping to login user', error.message);
+  }
+};
+export const createUserRefreshToken = async (
+  userdata: any,
+  refreshToken: any
+) => {
+  try {
+    const createRefreshToken = await prisma.user.update({
+      where: {
+        username: userdata.username,
+      },
+      data: {
+        refreshToken: refreshToken,
+      },
+    });
+    return createRefreshToken;
+  } catch (error: any) {
+    console.error(
+      'Error when attemping to create refresh token',
+      error.message
+    );
+  }
+};
+export const checkRefreshToken = async (data: any) => {
+  try {
+    const refreshChecker = await prisma.user.findFirst({
+      where: {
+        refreshToken: data.refreshToken,
+        username: data.username,
+      },
+    });
+    return refreshChecker;
+  } catch (error: any) {
+    console.error('Error checking for refresh token:', error.message);
+    throw error;
   }
 };

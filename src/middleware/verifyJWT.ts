@@ -1,11 +1,8 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { Response, Request, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { AuthenticatedRequest } from '../interfaces';
 dotenv.config();
-
-interface AuthenticatedRequest extends Request {
-  user?: string;
-}
 
 export const verifyJWT = (
   req: AuthenticatedRequest,

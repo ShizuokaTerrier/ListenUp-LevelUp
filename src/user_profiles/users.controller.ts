@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { Response, Request } from 'express';
 import * as userModel from './users.model';
+import { error } from 'console';
 dotenv.config();
 
 // registerNewUser first checks whether a username, password, and email are provided. It then encrypts the password with bcrypt using a salt round of ten. Before adding a new user to the database it first checks that a user with the same email address does not already exist.
@@ -73,13 +74,18 @@ export const handleLogin = async (req: Request, res: Response) => {
           process.env.REFRESH_TOKEN_SECRET,
           { expiresIn: '1d' }
         );
-        // Still need to save the JWT in the database somewhere... TO DO!!!
+        const saveRefreshToken = await userModel.createUserRefreshToken(
+          loginInfo,
+          refreshToken
+        );
         // HTTP only cookie because that is not avaialable to JS
-        res.cookie('jwt', refreshToken, {
-          httpOnly: true,
-          maxAge: 24 * 60 * 60 * 1000,
-        });
-        res.json({ accessToken });
+        if (saveRefreshToken) {
+          res.cookie('jwt', refreshToken, {
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000,
+          });
+          res.json({ accessToken });
+        }
       } else {
         res.status(401).send('Password Incorrect: please try again');
       }
@@ -88,5 +94,40 @@ export const handleLogin = async (req: Request, res: Response) => {
     res
       .status(400)
       .json({ message: 'Username, password, and email are required.' });
+  }
+};
+
+export const handleRefreshToken = async (req: Request, res: Response) => {
+  const { username, pwd, email } = req.body;
+  const cookies = req.cookies;
+  if (!cookies?.jwt) return res.status(401);
+  console.log(cookies.jwt);
+  const refreshToken = cookies.jwt;
+  const loginInfo = {
+    username: username,
+    email: email,
+    password: pwd,
+    refreshToken: refreshToken,
+  };
+  const checkRefreshToken = await userModel.checkRefreshToken(loginInfo);
+  if (!checkRefreshToken) return res.status(403); // forbidden
+  if (checkRefreshToken && process.env.REFRESH_TOKEN_SECRET) {
+    jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+      (err: any, decoded: any) => {
+        if (err || checkRefreshToken.username !== decoded.username)
+          return res.status(403);
+        if (process.env.ACCESS_TOKEN_SECRET) {
+          const accessToken = jwt.sign(
+            { username: decoded.username },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: '1D' }
+          );
+
+          res.json({ accessToken });
+        }
+      }
+    );
   }
 };
