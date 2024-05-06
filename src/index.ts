@@ -4,6 +4,8 @@ import cors from 'cors';
 const { logger } = require('./logEvents');
 import errorHandler from './middleware/errorHandler';
 import * as UsersController from './user_profiles/users.controller';
+import { verifyJWT } from './middleware/verifyJWT';
+import cookieParser from 'cookie-parser';
 const PORT = process.env.PORT || 8000;
 const app = express();
 
@@ -13,6 +15,9 @@ app.use(logger);
 // middle-ware for handling encoded data, such as form data
 
 app.use(express.urlencoded({ extended: false }));
+
+//middle-ware for cookies
+app.use(cookieParser());
 
 // middle-ware for JSON
 
@@ -39,9 +44,18 @@ app.get('/', async (req, res) => {
   res.json({ message: 'Success!' });
 });
 
+// JWT authorization test route
+
+app.get('/test', verifyJWT, async (req, res) => {
+  res.json({ message: 'Success!' });
+});
+
 // User Routes
 
 app.post('/user', UsersController.registerNewUser);
+app.post('/login', UsersController.handleLogin);
+app.get('/refresh', UsersController.handleRefreshToken);
+app.use(verifyJWT); // everything after this will require a JWT
 
 app.use(errorHandler);
 
