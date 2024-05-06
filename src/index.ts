@@ -4,6 +4,7 @@ import cors from 'cors';
 const { logger } = require('./logEvents');
 import errorHandler from './middleware/errorHandler';
 import * as UsersController from './user_profiles/users.controller';
+import { verifyJWT } from './middleware/verifyJWT';
 const PORT = process.env.PORT || 8000;
 const app = express();
 
@@ -36,6 +37,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.get('/', async (req, res) => {
+  res.json({ message: 'Success!' });
+});
+
+// JWT authorization test route
+
+app.get('/test', verifyJWT, async (req, res) => {
   res.json({ message: 'Success!' });
 });
 
