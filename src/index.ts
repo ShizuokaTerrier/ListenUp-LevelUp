@@ -55,6 +55,7 @@ app.get('/test', verifyJWT, async (req, res) => {
 app.post('/user', UsersController.registerNewUser);
 app.post('/login', UsersController.handleLogin);
 app.get('/refresh', UsersController.handleRefreshToken);
+app.get('/logout', UsersController.handleLogOut);
 app.use(verifyJWT); // everything after this will require a JWT
 
 app.use(errorHandler);

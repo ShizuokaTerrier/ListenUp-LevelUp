@@ -82,6 +82,8 @@ export const handleLogin = async (req: Request, res: Response) => {
         if (saveRefreshToken) {
           res.cookie('jwt', refreshToken, {
             httpOnly: true,
+            sameSite: 'none',
+            secure: true,
             maxAge: 24 * 60 * 60 * 1000,
           });
           res.json({ accessToken });
@@ -130,4 +132,32 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
       }
     );
   }
+};
+
+export const handleLogOut = async (req: Request, res: Response) => {
+  // On client also delete the access token
+  const { username, pwd, email } = req.body;
+  const cookies = req.cookies;
+  if (!cookies?.jwt) return res.status(204); // no content to send
+  const refreshToken = cookies.jwt;
+  const loginInfo = {
+    username: username,
+    email: email,
+    password: pwd,
+    refreshToken: refreshToken,
+  };
+  const checkRefreshToken = await userModel.checkRefreshToken(loginInfo);
+  if (!checkRefreshToken) {
+    res.clearCookie('jwt', { httpOnly: true });
+    return res.status(204); // successful with no content
+  }
+  // Delete the refresh token
+  const replaceToken = 'User logged out';
+  const saveRefreshToken = await userModel.createUserRefreshToken(
+    loginInfo,
+    replaceToken
+  );
+  if (saveRefreshToken)
+    res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true });
+  return res.status(200).send('User logged out');
 };
