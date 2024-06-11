@@ -24,7 +24,11 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Cross Origin Resource Sharing - remove the !origin when you want cors to start running properly
-const whitelist = ['http://listenuplevelup.com', 'http://localhost:8000'];
+const whitelist = [
+  'http://listenuplevelup.com',
+  'http://localhost:8000',
+  'http://localhost:5173',
+];
 const corsOptions = {
   origin: (
     origin: string | undefined,
@@ -55,6 +59,7 @@ app.get('/test', verifyJWT, async (req, res) => {
 app.post('/user', UsersController.registerNewUser);
 app.post('/login', UsersController.handleLogin);
 app.get('/refresh', UsersController.handleRefreshToken);
+app.get('/logout', UsersController.handleLogOut);
 app.use(verifyJWT); // everything after this will require a JWT
 
 app.use(errorHandler);
