@@ -9,15 +9,15 @@ dotenv.config();
 // registerNewUser first checks whether a username, password, and email are provided. It then encrypts the password with bcrypt using a salt round of ten. Before adding a new user to the database it first checks that a user with the same email address does not already exist.
 
 export const registerNewUser = async (req: Request, res: Response) => {
-  const { username, pwd, email } = req.body;
-  if (!username || !pwd || !email)
+  const { username, password, email } = req.body;
+  if (!username || !password || !email)
     return res
       .status(400)
       .json({ message: 'Username, password, and email are required.' });
   try {
     // encrypt with bCrypt
     const salt = await bcrypt.genSalt(10);
-    const hashedPwd = await bcrypt.hash(pwd, salt);
+    const hashedPwd = await bcrypt.hash(password, salt);
     // store the new user
     const userData = {
       username: req.body.username,
@@ -42,16 +42,15 @@ export const registerNewUser = async (req: Request, res: Response) => {
 // this function uses bcrypts compare method to check whether the input password matches the one we have in the database.
 
 export const handleLogin = async (req: Request, res: Response) => {
-  const { username, pwd, email } = req.body;
-  if (!username || !pwd || !email)
+  const { password, email } = req.body;
+  if (!password || !email)
     return res
       .status(400)
       .json({ message: 'Username, password, and email are required.' });
   try {
     const loginInfo = {
-      username: username,
       email: email,
-      password: pwd,
+      password: password,
     };
     const existingUserInfo = await userModel.loginUser(loginInfo);
     // if you don't have this if statement TS gets annoyed. Basically, it allows typescript to rule out the possibility that existingUserInfo is null or undefined.
@@ -75,7 +74,7 @@ export const handleLogin = async (req: Request, res: Response) => {
           { expiresIn: '1d' }
         );
         const saveRefreshToken = await userModel.createUserRefreshToken(
-          loginInfo,
+          existingUserInfo,
           refreshToken
         );
         // HTTP only cookie because that is not avaialable to JS
@@ -100,7 +99,7 @@ export const handleLogin = async (req: Request, res: Response) => {
 };
 
 export const handleRefreshToken = async (req: Request, res: Response) => {
-  const { username, pwd, email } = req.body;
+  const { username, password, email } = req.body;
   const cookies = req.cookies;
   if (!cookies?.jwt) return res.status(401);
   console.log(cookies.jwt);
@@ -108,7 +107,7 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
   const loginInfo = {
     username: username,
     email: email,
-    password: pwd,
+    password: password,
     refreshToken: refreshToken,
   };
   const checkRefreshToken = await userModel.checkRefreshToken(loginInfo);
@@ -136,14 +135,14 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
 
 export const handleLogOut = async (req: Request, res: Response) => {
   // On client also delete the access token
-  const { username, pwd, email } = req.body;
+  const { username, password, email } = req.body;
   const cookies = req.cookies;
   if (!cookies?.jwt) return res.status(204); // no content to send
   const refreshToken = cookies.jwt;
   const loginInfo = {
     username: username,
     email: email,
-    password: pwd,
+    password: password,
     refreshToken: refreshToken,
   };
   const checkRefreshToken = await userModel.checkRefreshToken(loginInfo);
