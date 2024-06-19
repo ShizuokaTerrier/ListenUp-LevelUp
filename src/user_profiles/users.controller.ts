@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { Response, Request } from 'express';
 import * as userModel from './users.model';
-import { error } from 'console';
+
 dotenv.config();
 
 // registerNewUser first checks whether a username, password, and email are provided. It then encrypts the password with bcrypt using a salt round of ten. Before adding a new user to the database it first checks that a user with the same email address does not already exist.

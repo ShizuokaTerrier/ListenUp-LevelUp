@@ -4,6 +4,7 @@ import cors from 'cors';
 const { logger } = require('./logEvents');
 import errorHandler from './middleware/errorHandler';
 import * as UsersController from './user_profiles/users.controller';
+import * as GamesScoresController from './game_scores/gameScores.controller';
 import { verifyJWT } from './middleware/verifyJWT';
 import cookieParser from 'cookie-parser';
 const PORT = process.env.PORT || 8000;
@@ -60,8 +61,9 @@ app.post('/user', UsersController.registerNewUser);
 app.post('/login', UsersController.handleLogin);
 app.get('/refresh', UsersController.handleRefreshToken);
 app.get('/logout', UsersController.handleLogOut);
-app.use(verifyJWT); // everything after this will require a JWT
+app.post('/scores', GamesScoresController.handleScores);
 
+app.use(verifyJWT); // everything after this will require a JWT
 app.use(errorHandler);
 
 app.listen(8000, () => {
