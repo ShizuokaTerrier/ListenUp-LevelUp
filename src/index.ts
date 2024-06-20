@@ -61,10 +61,11 @@ app.post('/user', UsersController.registerNewUser);
 app.post('/login', UsersController.handleLogin);
 app.get('/refresh', UsersController.handleRefreshToken);
 app.get('/logout', UsersController.handleLogOut);
-app.post('/scores', GamesScoresController.handleScores);
-
 app.use(verifyJWT); // everything after this will require a JWT
 app.use(errorHandler);
+
+// be sure to use Bearer Token not JWT Token when testing this on PostMan.
+app.post('/scores', GamesScoresController.handleScores);
 
 app.listen(8000, () => {
   console.log(`Server running on localhost:${PORT}`);

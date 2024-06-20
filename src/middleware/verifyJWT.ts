@@ -11,7 +11,7 @@ export const verifyJWT = (
 ) => {
   const authHeader = req.headers['authorization'];
   console.log(authHeader); // bearer token
-  if (!authHeader) return res.status(401);
+  if (!authHeader) return res.status(401).send('Unauthorized');
   const token = authHeader.split(' ')[1];
   console.log(token);
   if (process.env.ACCESS_TOKEN_SECRET) {
