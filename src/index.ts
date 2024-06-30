@@ -1,5 +1,4 @@
 import express, { NextFunction } from 'express';
-import { Request, Response, Router } from 'express';
 import cors from 'cors';
 const { logger } = require('./logEvents');
 import errorHandler from './middleware/errorHandler';
@@ -9,6 +8,8 @@ import { verifyJWT } from './middleware/verifyJWT';
 import cookieParser from 'cookie-parser';
 const PORT = process.env.PORT || 8000;
 const app = express();
+import { auth } from 'express-oauth2-jwt-bearer';
+import { prototype } from 'events';
 
 // custom middleware logger
 app.use(logger);
@@ -23,6 +24,12 @@ app.use(cookieParser());
 // middle-ware for JSON
 
 app.use(express.json());
+
+const jwtCheck = auth({
+  audience: 'localhhost:8000/api',
+  issuerBaseURL: 'https://dev-ub84xie5mxyi2g4z.us.auth0.com/',
+  tokenSigningAlg: 'RS256',
+});
 
 // Cross Origin Resource Sharing - remove the !origin when you want cors to start running properly
 const whitelist = [
@@ -51,22 +58,23 @@ app.get('/', async (req, res) => {
 
 // JWT authorization test route
 
-app.get('/test', verifyJWT, async (req, res) => {
-  res.json({ message: 'Success!' });
-});
+// app.get('/test', verifyJWT, async (req, res) => {
+//   res.json({ message: 'Success!' });
+// });
 
 // User Routes
 
-app.post('/user', UsersController.registerNewUser);
-app.post('/login', UsersController.handleLogin);
-app.get('/refresh', UsersController.handleRefreshToken);
-app.get('/logout', UsersController.handleLogOut);
-app.use(verifyJWT); // everything after this will require a JWT
-app.use(errorHandler);
+// app.post('/user', UsersController.registerNewUser);
+// app.post('/login', UsersController.handleLogin);
+// app.get('/refresh', UsersController.handleRefreshToken);
+// app.get('/logout', UsersController.handleLogOut);
+// app.use(verifyJWT); // everything after this will require a JWT
+// app.use(errorHandler);
 
 // be sure to use Bearer Token not JWT Token when testing this on PostMan.
+app.use(jwtCheck);
 app.post('/scores', GamesScoresController.handleScores);
 
-app.listen(8000, () => {
-  console.log(`Server running on localhost:${PORT}`);
-});
+app.listen(PORT);
+
+console.log('Running on port', PORT);
