@@ -25,3 +25,14 @@ export const handleScores = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Failed to add score' });
   }
 };
+
+export const getAllScores = async (req: Request, res: Response) => {
+  try {
+    const getTheScores = await gameScoresModel.getAllScores();
+
+    res.status(200).send(getTheScores);
+  } catch (error) {
+    console.error('Error fetching scores:', error);
+    return res.status(500).json({ message: 'Failed to fetch scores' });
+  }
+};

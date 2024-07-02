@@ -15,3 +15,11 @@ export const addScore = async (data: any) => {
     throw new Error('Failed to add score');
   }
 };
+
+export const getAllScores = async () => {
+  try {
+    return await prisma.score.findMany();
+  } catch (error: any) {
+    throw new Error('Failed to fetch any scores');
+  }
+};

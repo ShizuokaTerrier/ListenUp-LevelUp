@@ -1,15 +1,14 @@
 import express, { NextFunction } from 'express';
 import cors from 'cors';
 const { logger } = require('./logEvents');
-import errorHandler from './middleware/errorHandler';
-import * as UsersController from './user_profiles/users.controller';
+// import errorHandler from './middleware/errorHandler';
+// import * as UsersController from './user_profiles/users.controller';
 import * as GamesScoresController from './game_scores/gameScores.controller';
-import { verifyJWT } from './middleware/verifyJWT';
+// import { verifyJWT } from './middleware/verifyJWT';
 import cookieParser from 'cookie-parser';
 const PORT = process.env.PORT || 8000;
 const app = express();
 import { auth } from 'express-oauth2-jwt-bearer';
-import { prototype } from 'events';
 
 // custom middleware logger
 app.use(logger);
@@ -23,10 +22,10 @@ app.use(cookieParser());
 
 // middle-ware for JSON
 
-app.use(express.json());
+// app.use(express.json());
 
 const jwtCheck = auth({
-  audience: 'localhhost:8000/api',
+  audience: 'localhost:8000/api',
   issuerBaseURL: 'https://dev-ub84xie5mxyi2g4z.us.auth0.com/',
   tokenSigningAlg: 'RS256',
 });
@@ -35,6 +34,7 @@ const jwtCheck = auth({
 const whitelist = [
   'http://listenuplevelup.com',
   'http://localhost:8000',
+
   'http://localhost:5173',
 ];
 const corsOptions = {
@@ -52,9 +52,9 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-app.get('/', async (req, res) => {
-  res.json({ message: 'Success!' });
-});
+// app.get('/', async (req, res) => {
+//   res.json({ message: 'Success!' });
+// });
 
 // JWT authorization test route
 
@@ -73,6 +73,10 @@ app.get('/', async (req, res) => {
 
 // be sure to use Bearer Token not JWT Token when testing this on PostMan.
 app.use(jwtCheck);
+app.get('/', async (req, res) => {
+  res.json({ message: 'The authO is working' });
+});
+app.get('/scores', GamesScoresController.getAllScores);
 app.post('/scores', GamesScoresController.handleScores);
 
 app.listen(PORT);
