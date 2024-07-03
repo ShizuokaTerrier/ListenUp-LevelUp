@@ -37,4 +37,13 @@ model Game {
   id Int @id @default(autoincrement())
   name String 
   scores Score [] // game has many scores 
+  languageData LanguageData[] // each game has a variety of language data
+}
+
+model LanguageData {
+  id Int @id @default(autoincrement())
+  gameId Int // ID of the game
+  languageDataName String
+  languageDataContent Json[]
+  game Game @relation(fields: [gameId], references: [id])
 }
