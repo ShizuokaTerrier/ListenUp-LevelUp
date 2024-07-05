@@ -13,24 +13,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id Int @id @default(autoincrement())
-  username String @unique
-  email String @unique
-  password String 
-  createdAt DateTime @default(now())
-  refreshToken String?
-  scores Score[] // user has many scores 
-}
+
 
 model Score {
   id Int @id @default(autoincrement())
   value Int 
   gameId Int // ID of the game 
-  userId Int // ID of the user who got the score 
+  userId String // ID of the user who got the score 
   createdAt DateTime @default(now())
   game Game @relation(fields: [gameId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  
 }
 
 model Game {

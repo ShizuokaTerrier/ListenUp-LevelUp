@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 // middle-ware for JSON
 
-// app.use(express.json());
+app.use(express.json());
 
 const jwtCheck = auth({
   audience: 'localhost:8000/api',
@@ -34,7 +34,7 @@ const jwtCheck = auth({
 const whitelist = [
   'http://listenuplevelup.com',
   'http://localhost:8000',
-
+  'http://localhost:8000/',
   'http://localhost:5173',
 ];
 const corsOptions = {

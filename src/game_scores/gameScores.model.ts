@@ -4,9 +4,15 @@ const prisma = new PrismaClient();
 
 export const addScore = async (data: any) => {
   try {
-    return await prisma.score.create({
-      data,
+    const newScore = await prisma.score.create({
+      data: {
+        id: data.id,
+        gameId: data.gameId,
+        userId: data.userId,
+        value: data.value,
+      },
     });
+    return newScore;
   } catch (error: any) {
     console.error(
       'Error when attempting to add score to the database',

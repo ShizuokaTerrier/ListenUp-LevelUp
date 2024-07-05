@@ -3,10 +3,11 @@ import { Response, Request } from 'express';
 
 export const handleScores = async (req: Request, res: Response) => {
   const { value, gameId, userId } = req.body;
+  console.log(req.body);
   if (!value || !gameId || !userId)
     return res
       .status(400)
-      .json({ message: 'id, value, gameId and userId require' });
+      .json({ message: 'value, gameId and userId required' });
   try {
     const newScore = {
       value: value,
